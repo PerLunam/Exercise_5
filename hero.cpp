@@ -57,17 +57,30 @@ Item* Hero::removeEquipmentItem(int slot)
     }
 }
 
+void Hero::setNullptrItemEquipment(Item* item)
+{
+    if(!item)
+    {
+        throw InvalidItemException("Character::setNullptrItem: Fehlerhaft initiertes Item.");
+    } else
+    {
+        item = nullptr;
+    }
+}
+
 void Hero::sellItem(int index)
 {
     //Verkauf der Items aus "inventory" und "hero_gear"
-    if(index >= 0 && index < MAX_EQUIPMENT_SIZE)
+
+    //Erster Schritt - Prüfung, ob Wert von "index" innerhalb der Arraygröße von "hero_gear" liegt
+    if (index >= 0 && index < MAX_EQUIPMENT_SIZE)
     {
-        if(this->hero_gear[index])
+        if (this->hero_gear[index])
         {
             this->setGold(this->getGold() + this->getEquipment(index)->getValue());
             //this->setGold(this->getEquipment(index)->getValue());
 
-            this->setNullptrItem(this->getEquipment(index));
+            this->setNullptrItemEquipment(this->getEquipment(index));
 
             //Ausgabe einer Bestätigung über das Terminal
             std::cout << "Der Gegenstand " << this->getEquipment(index)->getName() << " wurde für "
@@ -76,49 +89,34 @@ void Hero::sellItem(int index)
         } else
         {
             //Passende Exception, wenn der angegebene Indexwert auf "nullptr" zeigt
-            throw InvalidItemException("Hero::sellItem(): line141_Unter dem angegebenen Index ist kein gültiges Item in \"hero_gear\" gespeichert.");
+            throw InvalidItemException(
+                    "Hero::sellItem(): line141_Unter dem angegebenen Index ist kein gültiges Item in \"hero_gear\" gespeichert.");
         }
-
-        if(this-> getInventory(index))
-        {
-            this->setGold(this->getGold() + this->getInventory(index)->getValue());
-            //this->setGold(this->getInventory(index)->getValue());
-
-            this->setNullptrItem(this->getInventory(index));
-
-            //Ausgabe einer Bestätigung über das Terminal
-            std::cout << "Der Gegenstand " << this->getInventory(index)->getName() << " wurde für "
-                      << this->getInventory(index)->getValue() << " Gold verkauft. "
-                      << this->getName() << " besitzt nun " << this->getGold() << " Gold." << std::endl;
-        } else
-        {
-            //Passende Exception, wenn der angegebene Indexwert auf "nullptr" zeigt
-            throw InvalidItemException("Hero::sellItem(): line158_Unter dem angegebenen Index ist kein gültiges Item in \"inventory\" gespeichert.");
-        }
-    } else if(index >= MAX_EQUIPMENT_SIZE && index < MAX_INVENTORY_SIZE)
-    {
-        if(this->getInventory(index))
-        {
-            this->setGold(this->getGold() + this->getInventory(index)->getValue());
-            //this->setGold(this->getInventory(index)->getValue());
-
-            this->setNullptrItem(this->getInventory(index));
-
-            //Ausgabe einer Bestätigung über das Terminal
-            std::cout << "Der Gegenstand " << this->getInventory(index)->getName() << " wurde für "
-                      << this->getInventory(index)->getValue() << " Gold verkauft. "
-                      << this->getName() << " besitzt nun " << this->getGold() << " Gold." << std::endl;
-        } /*else
-            {
-                //Auskommentiert, da sonst immer eine Exception kam, da nicht das gesamte "inventory" mit Items initialisiert ist
-                //Passende Exception, wenn der angegebene Indexwert auf "nullptr" zeigt
-                throw InvalidItemException("Hero::sellItem(): line176_Unter dem angegebenen Index ist kein gültiges Item in \"inventory\" gespeichert.");
-            }
-            */
     } else
     {
         //Passende Exception, wenn der eingegebene Indexwert außerhalb des Wertebereichs liegt
-        throw InvalidIndexException("Hero::sellItem(): Der angegebene Indexwert liegt außerhalb des gültigen Wertebereichs.");
+        throw InvalidIndexException(
+                "Hero::sellItem(): Der angegebene Indexwert liegt außerhalb des gültigen Wertebereichs.");
+    }
+
+    //Zweiter Schritt - Prüfen, ob am Platz von "index" ein gültiges Item (bzw. "nicht-Nullptr") vorhanden ist
+    if (this->getInventory(index))
+    {
+        this->setGold(this->getGold() + this->getInventory(index)->getValue());
+        //this->setGold(this->getInventory(index)->getValue());
+
+        this->removeInventarItem(index);
+        //this->setNullptrItemInventory(this->getInventory(index));
+
+        //Ausgabe einer Bestätigung über das Terminal
+        std::cout << "Der Gegenstand " << this->getInventory(index)->getName() << " wurde für "
+                  << this->getInventory(index)->getValue() << " Gold verkauft. "
+                  << this->getName() << " besitzt nun " << this->getGold() << " Gold." << std::endl;
+    } else
+    {
+        //Passende Exception, wenn der angegebene Indexwert auf "nullptr" zeigt
+        throw InvalidItemException(
+                "Hero::sellItem(): line158_Unter dem angegebenen Index ist kein gültiges Item in \"inventory\" gespeichert.");
     }
 }
 

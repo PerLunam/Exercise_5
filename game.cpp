@@ -20,7 +20,11 @@ void Game::play() {
         //Hero testing("Test", -100, 0, 15, 10);
 
         //Initialize Hero "Annina" und deren Items sowie Ausrüstung
-        std::shared_ptr<Hero> annina(new Hero("Annina", 700, 200, 15, 10));
+
+        //Verwendung eines Templates zur Initialisierung
+        //std::shared_ptr<Hero> annina = createCharacter<Hero>("Annina", 700, 200, 15, 10);
+
+        std::shared_ptr<Hero> annina(new Hero(this, "Annina", 700, 200, 15, 10));
         addCharacter(annina);
         annina->addInventarItem(std::shared_ptr<Item>(new Item("Riesenschwert", 70)));
         annina->addInventarItem(std::shared_ptr<Item>(new Item("Diamantamulett", 90)));
@@ -31,7 +35,11 @@ void Game::play() {
         std::cout << "------------------------------" << std::endl;
 
         //Initialize Fighter "Matthias" und dessen Items
-        std::shared_ptr<Fighter> matthias(new Fighter("Matthias", 50, 100, 10, 5, 25));
+
+        //Verwendung eines Templates zur Initialisierung
+        //std::shared_ptr<Fighter> matthias = createCharacter<Fighter>("Matthias", 50, 100, 10, 5, 25);
+
+        std::shared_ptr<Fighter> matthias(new Fighter(this, "Matthias", 50, 100, 10, 5, 25));
         addCharacter(matthias);
         matthias->addInventarItem(std::shared_ptr<Item>(new Item("Bernstein-Umhang", 250)));
         matthias->addInventarItem(std::shared_ptr<Item>(new Item("Silberaxt", 170)));
@@ -41,7 +49,11 @@ void Game::play() {
         std::cout << "------------------------------" << std::endl;
 
         //Initialize Sorcerer "Pascal" und dessen Items
-        std::shared_ptr<Sorcerer> pascal(new Sorcerer("Pascal", 100, 300, 5, 10, 25));
+
+        //Verwendung eines Templates zur Initialisierung
+        //std::shared_ptr<Sorcerer> pascal = createCharacter<Sorcerer>("Pascal", 100, 300, 5, 10, 25);
+
+        std::shared_ptr<Sorcerer> pascal(new Sorcerer(this, "Pascal", 100, 300, 5, 10, 25));
         addCharacter(pascal);
         pascal->addInventarItem(std::shared_ptr<Item>(new Item("Zaubertrunk", 50)));
         pascal->addInventarItem(std::shared_ptr<Item>(new Item("Nachtschattenrüstung", 350)));
@@ -57,16 +69,36 @@ void Game::play() {
         if(annina->fight(matthias.get()))
         {
             annina->retrieveRandomLoot(matthias.get());
+            matthias.reset();
 
             if(annina->fight(pascal.get()))
             {
                 annina->retrieveRandomLoot(pascal.get());
+                pascal.reset();
 
-                for(int k = 0; k < MAX_INVENTORY_SIZE; ++k)
+                for(int i = 0; i < annina->countItems(); i++)
                 {
-                    annina->sellItem(k);
+                    try
+                    {
+                        annina->sellItem(i);
+                    } catch(InvalidItemException &error)
+                    {
+                        std::cerr << "Caught exception in game.cpp::play::sellItem: " << error.what() << std::endl;
+                    }
                 }
 
+                /* Lösung aus Exercise 4
+                for(int k = 0; k < MAX_INVENTORY_SIZE; ++k)
+                {
+                    try
+                    {
+                        annina->sellItem(k);
+                    } catch(InvalidItemException &error)
+                    {
+                        std::cerr << "Caught exception in game.cpp::play::sellItem: " << error.what() << std::endl;
+                    }
+                }
+                */
             }
 
             //TBD
@@ -79,7 +111,7 @@ void Game::play() {
         }
     } catch (std::exception &error) //alternativ: catch(...)
     {
-        std::cerr << "Caught exception in main: " << error.what() << std::endl;
+        std::cerr << "Caught exception in game.cpp::play: " << error.what() << std::endl;
     }
 }
 

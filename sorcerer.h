@@ -17,8 +17,8 @@ public:
     //Konstruktor der Class "Sorcerer"
 
     //Individueller Konstruktor
-    Sorcerer(const std::string &char_name, int char_health, int char_gold, int char_armor, int char_mr, int magicPower)
-            : NPC(char_name, char_health, char_gold, char_armor, char_mr), magicPower(magicPower), typ(typeSorcerer)
+    Sorcerer(Game* parent, const std::string &char_name, int char_health, int char_gold, int char_armor, int char_mr, int magicPower)
+            : NPC(parent, char_name, char_health, char_gold, char_armor, char_mr), magicPower(magicPower), typ(typeSorcerer)
     {
         std::cout << "Sorcerer::Constructor: " << char_name << std::endl;
     }

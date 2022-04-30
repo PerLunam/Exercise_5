@@ -6,15 +6,15 @@
 #include <vector>
 #include <memory>
 
+#include "game.h"
 #include "item.h"
 #include "type.h"
 #include "exception.h"
 
-#define MAX_INVENTORY_SIZE 10
-
 class Character
 {
 private:
+    Game* parent;
     std::string char_name;
     int char_health;
     int char_gold;
@@ -26,8 +26,8 @@ public:
     //Konstruktor der Class "Character"
 
     //Individueller Konstruktor
-    Character(const std::string &name, int health, int gold, int armor, int mr)
-            : char_name(name), char_health(health), char_gold(gold), char_armor(armor), char_mr(mr), inventory()
+    Character(Game* parent, const std::string &name, int health, int gold, int armor, int mr)
+            : parent(parent), char_name(name), char_health(health), char_gold(gold), char_armor(armor), char_mr(mr), inventory()
     {
         //Exception, falls kein Name bei der Initialisierung angegeben wurde
         if(name.empty())
@@ -58,12 +58,14 @@ public:
 
     bool fight(Character *enemy);
 
-    int addInventarItem(std::shared_ptr<Item> item);
+    void addInventarItem(std::shared_ptr<Item> item);
     std::shared_ptr<Item> removeInventarItem(int slot);
 
     virtual enumType &getType() = 0;
 
     std::shared_ptr<Item> retrieveRandomLoot(Character *enemy);
+
+    int countItems();
 
     //----------------------------- Getter & Setter -----------------------------
     const std::string& getName() const;
@@ -82,7 +84,7 @@ public:
     void setMR(int newMR);
 
     std::shared_ptr<Item> getInventory(int index);
-    void setNullptrItem(std::shared_ptr<Item> item);
+    void setNullptrItemInventory(std::shared_ptr<Item> item);
 };
 
 //Operatorenüberladung des Operators "<<"

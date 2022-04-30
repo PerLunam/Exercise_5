@@ -14,7 +14,11 @@ bool Character::fight(Character *enemy)
     } while(this->getHealth() > 0 && enemy->getHealth() > 0);
 
     //"Hero" gewinnt und schlägt "Enemy"
-    std::cout << enemy->getName() << " fiel in Ohnmacht! " << this->getName() << " hat noch " << this->getHealth() << " Lebenspunkte." << std::endl;
+    if(this->getHealth() > 0)
+    {
+        std::cout << enemy->getName() << " fiel in Ohnmacht! " << this->getName() << " hat noch " << this->getHealth() << " Lebenspunkte." << std::endl;
+        parent->removeCharacter(enemy->getName());
+    }
 
     //Grafische Trennung der Inhalte
     std::cout << "------------------------------" << std::endl;
@@ -24,7 +28,7 @@ bool Character::fight(Character *enemy)
 }
 
 
-int Character::addInventarItem(std::shared_ptr<Item> item)
+void Character::addInventarItem(std::shared_ptr<Item> item)
 {
     inventory.push_back(item);
 }
@@ -51,6 +55,16 @@ std::shared_ptr<Item> Character::retrieveRandomLoot(Character *enemy)
     //Initialisierung eines Counters, welcher als Zahlenbasis für die Zufallszahlgenerierung dient
     int counter = -1;
 
+    //Für jedes korrekt initialisierte Item im Inventar des "enemy" wird "counter" um 1 erhöht
+    for(int k = 0; k < enemy->inventory.size(); k++)
+    {
+        if(enemy->inventory[k])
+        {
+            counter++;
+        }
+    }
+
+    /*
     //Für jedes korrekt initialisierte Item wird "counter" um 1 erhöht
     //Max. Wert = 9, da MAX_INVENTORY_SIZE als Array[10] also mit Index von 0 bis 9 definiert ist
     for(int i = 0; i < MAX_INVENTORY_SIZE; i++)
@@ -60,6 +74,7 @@ std::shared_ptr<Item> Character::retrieveRandomLoot(Character *enemy)
             counter++;
         }
     }
+    */
 
     //Zufällige Zahl wird generiert und dient als Kriterium für die Auswahl des entsprechenden Item-Index
     int rndNumber = rand() % (counter);
@@ -71,7 +86,7 @@ std::shared_ptr<Item> Character::retrieveRandomLoot(Character *enemy)
         //und dem Inventar des Helden/ der Heldin beigefügt werden ("addInventarItem")
 
         //Deklaration einer Variablen für das Item an Index "rndNumber"
-        Item* lootItem = enemy->inventory[rndNumber];
+        std::shared_ptr<Item> lootItem = enemy->inventory[rndNumber];
 
         //Item wird aus dem Inventar des Gegners entfernt
         enemy->removeInventarItem(rndNumber);
@@ -95,6 +110,12 @@ std::shared_ptr<Item> Character::retrieveRandomLoot(Character *enemy)
 
         throw InventarFullException("Character::retrieveRandomLoot(): Inventar ist bereits komplett belegt.");
     }
+}
+
+int Character::countItems()
+{
+    int counter = this->inventory.size();
+    return counter;
 }
 
 //----------------------------- Getter & Setter -----------------------------
@@ -180,7 +201,7 @@ std::shared_ptr<Item> Character::getInventory(int index)
     return item;
 }
 
-void Character::setNullptrItem(std::shared_ptr<Item> item)
+void Character::setNullptrItemInventory(std::shared_ptr<Item> item)
 {
     if(!item)
     {
