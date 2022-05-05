@@ -2,11 +2,13 @@
 #define EXERCISE_5_GAME_H
 
 #include <map>
+#include <vector>
 #include <memory>
 #include <string>
 
 //Forward-Declaration der Class "Character"
 class Character;
+class Item;
 
 class Game {
 
@@ -14,6 +16,7 @@ private:
 
 protected:
     std::map<std::string, std::shared_ptr<Character> > characters;
+    std::vector<std::shared_ptr<Item>> nonAssignedItem;
 
 public:
     void play();
@@ -34,6 +37,8 @@ public:
     void removeCharacter(const std::string& char_name);
 
     void printCharacter();
+
+    void addItem(std::shared_ptr<Item> item);
 };
 
 

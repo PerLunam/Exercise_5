@@ -28,8 +28,8 @@ void Game::play() {
         addCharacter(annina);
         annina->addInventarItem(std::shared_ptr<Item>(new Item("Riesenschwert", 70)));
         annina->addInventarItem(std::shared_ptr<Item>(new Item("Diamantamulett", 90)));
-        annina->addEquipmentItem(new Item("Rosenlanze", 300));
-        annina->addEquipmentItem(new Item("Trank der Stärke", 25));
+        annina->addEquipmentItem(std::shared_ptr<Item>(new Item("Rosenlanze", 300)));
+        annina->addEquipmentItem(std::shared_ptr<Item>(new Item("Trank der Stärke", 25)));
 
         //Grafische Trennung der Inhalte
         std::cout << "------------------------------" << std::endl;
@@ -145,4 +145,9 @@ void Game::printCharacter() {
         std::cout << "Key: " << character.first << " = " << "Lebenspunkte: " << character.second->getHealth() << " ; Gold: " << character.second->getGold()
         << " ; Rüstung: " << character.second->getArmor() << " ; Magieresistenz: " << character.second->getMR() <<  std::endl;
     }
+}
+
+void Game::addItem(std::shared_ptr<Item> item)
+{
+    nonAssignedItem.push_back(item);
 }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 
 #include "game.h"
@@ -14,6 +15,8 @@
 class Character
 {
 private:
+
+protected:
     Game* parent;
     std::string char_name;
     int char_health;
@@ -21,6 +24,10 @@ private:
     int char_armor;
     int char_mr;
     std::vector<std::shared_ptr<Item>> inventory;
+    /*
+    std::map<int, std::shared_ptr<Item>> inventory;
+    int nextInventoryID = 0;
+    */
 
 public:
     //Konstruktor der Class "Character"
@@ -48,6 +55,7 @@ public:
     virtual ~Character()
     {
         //std::cout << "Character::Destructor: " << char_name << std::endl;
+        inventory.clear();
 
         //Grafische Trennung der Inhalte
         std::cout << "------------------------------" << std::endl;
@@ -59,6 +67,7 @@ public:
     bool fight(Character *enemy);
 
     void addInventarItem(std::shared_ptr<Item> item);
+    //int addInventarItem(std::shared_ptr<Item> item);
     std::shared_ptr<Item> removeInventarItem(int slot);
 
     virtual enumType &getType() = 0;

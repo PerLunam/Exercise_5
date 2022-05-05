@@ -27,11 +27,33 @@ bool Character::fight(Character *enemy)
     return this->getHealth() > 0;
 }
 
-
 void Character::addInventarItem(std::shared_ptr<Item> item)
 {
-    inventory.push_back(item);
+    if(item)
+    {
+        inventory.push_back(item);
+    } else
+    {
+        //Passende Exception, wenn der angegebene Indexwert auf "nullptr" zeigt
+        throw InvalidItemException("Character::removeInventarItem(): Unter dem angegebenen Index ist kein gültiges Item gespeichert.");
+    }
 }
+
+/*
+int Character::addInventarItem(std::shared_ptr<Item> item)
+{
+    if(item)
+    {
+        int ID = nextInventoryID++;
+        inventory.insert({ID, item});
+        return ID;
+    } else
+    {
+        //Passende Exception, wenn der angegebene Indexwert auf "nullptr" zeigt
+        throw InvalidItemException("Character::removeInventarItem(): Unter dem angegebenen Index ist kein gültiges Item gespeichert.");
+    }
+}
+*/
 
 std::shared_ptr<Item> Character::removeInventarItem(int slot)
 {
@@ -50,13 +72,28 @@ std::shared_ptr<Item> Character::removeInventarItem(int slot)
     }
 }
 
+/*
+std::shared_ptr<Item> Character::removeInventarItem(int slot)
+{
+    try
+    {
+        auto value = inventory.at(slot);
+        inventory.erase(slot);
+        return value;
+    } catch(std::out_of_range& error)
+    {
+        throw InvalidIndexException("Character::removeInventarItem(): Der angegebene Indexwert liegt außerhalb des gültigen Wertebereichs.");
+    }
+}
+*/
+
 std::shared_ptr<Item> Character::retrieveRandomLoot(Character *enemy)
 {
     //Initialisierung eines Counters, welcher als Zahlenbasis für die Zufallszahlgenerierung dient
     int counter = -1;
 
     //Für jedes korrekt initialisierte Item im Inventar des "enemy" wird "counter" um 1 erhöht
-    for(int k = 0; k < enemy->inventory.size(); k++)
+    for(unsigned int k = 0; k < enemy->inventory.size(); k++)
     {
         if(enemy->inventory[k])
         {

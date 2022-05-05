@@ -13,7 +13,7 @@ class NPC;
 class Hero : public Character
 {
 private:
-    Item* hero_gear[MAX_EQUIPMENT_SIZE];
+    std::shared_ptr<Item> hero_gear[MAX_EQUIPMENT_SIZE];
     enumType typ;
 
 protected:
@@ -31,11 +31,6 @@ public:
     //Destruktor
     virtual ~Hero()
     {
-        for(int i = 0; i < MAX_EQUIPMENT_SIZE; ++i)
-        {
-            delete hero_gear[i];
-        }
-
         //Grafische Trennung der Inhalte
         //std::cout << "------------------------------" << std::endl;
 
@@ -46,10 +41,10 @@ public:
     //----------------------------- Objektfunktionen -----------------------------
     virtual void attack(Character *enemy) override;
 
-    int addEquipmentItem(Item* item);
-    Item* removeEquipmentItem(int slot);
+    int addEquipmentItem(std::shared_ptr<Item> item);
+    std::shared_ptr<Item> removeEquipmentItem(int slot);
 
-    void setNullptrItemEquipment(Item* item);
+    void setNullptrItemEquipment(std::shared_ptr<Item> item);
 
     void sellItem(int index);
 
@@ -57,7 +52,7 @@ public:
 
     //----------------------------- Getter & Setter -----------------------------
     //Werden von der Elternklasse "Character" übernommen
-    Item* getEquipment(int index);
+    std::shared_ptr<Item> getEquipment(int index);
 };
 
 #endif //EXERCISE_5_HERO_H

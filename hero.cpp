@@ -14,7 +14,7 @@ void Hero::attack(Character *enemy)
     std::cout << this->getName() << " trifft " << enemy->getName() << " für " << damage << " Lebenspunkte." << std::endl;
 }
 
-int Hero::addEquipmentItem(Item *item)
+int Hero::addEquipmentItem(std::shared_ptr<Item> item)
 {
     for(int i = 0; i < MAX_EQUIPMENT_SIZE; ++i)
     {
@@ -34,18 +34,19 @@ int Hero::addEquipmentItem(Item *item)
     throw InventarFullException("Character::addInventarItem(): Inventar ist bereits komplett belegt.");
 }
 
-Item* Hero::removeEquipmentItem(int slot)
+std::shared_ptr<Item> Hero::removeEquipmentItem(int slot)
 {
     if (slot < 0 || slot > MAX_EQUIPMENT_SIZE)
-        //if (slot >= 0 && slot < MAX_EQUIPMENT_SIZE)
+    //if (slot >= 0 && slot < MAX_EQUIPMENT_SIZE)
     {
         //Passende Exception, wenn der eingegebene Indexwert außerhalb des Wertebereichs liegt
         throw InvalidIndexException("Hero::removeEquipmentItem(): Der angegebene Indexwert liegt außerhalb des gültigen Wertebereichs.");
     } else if(this->hero_gear[slot])
     {
         //Überschreiben des Slots mit "nullptr" mithilfe einer zusätzlichen Variablen "retValue"
-        Item* retValue = this->hero_gear[slot];
-        this->hero_gear[slot] = nullptr;
+        auto retValue = this->hero_gear[slot];
+        //std::shared_ptr<Item> retValue = this->hero_gear[slot];
+        hero_gear[slot].reset();
 
         //std::cout << "Das Item " << this->hero_gear[slot]->getName() << " wurde aus dem Equipment von " << this->getName() << " entfernt." << std::endl;
 
@@ -57,7 +58,7 @@ Item* Hero::removeEquipmentItem(int slot)
     }
 }
 
-void Hero::setNullptrItemEquipment(Item* item)
+void Hero::setNullptrItemEquipment(std::shared_ptr<Item> item)
 {
     if(!item)
     {
@@ -72,7 +73,7 @@ void Hero::sellItem(int index)
 {
     //Verkauf der Items aus "inventory" und "hero_gear"
 
-    //Erster Schritt - Prüfung, ob Wert von "index" innerhalb der Arraygröße von "hero_gear" liegt
+    //Erster Schritt - Prüfung, ob Wert von "index" innerhalb der Array-Größe von "hero_gear" liegt
     if (index >= 0 && index < MAX_EQUIPMENT_SIZE)
     {
         if (this->hero_gear[index])
@@ -103,10 +104,11 @@ void Hero::sellItem(int index)
     if (this->getInventory(index))
     {
         this->setGold(this->getGold() + this->getInventory(index)->getValue());
-        //this->setGold(this->getInventory(index)->getValue());
+        //char_gold += this->getInventory(index)->getValue();
+
+        parent->addItem(this->getInventory(index));
 
         this->removeInventarItem(index);
-        //this->setNullptrItemInventory(this->getInventory(index));
 
         //Ausgabe einer Bestätigung über das Terminal
         std::cout << "Der Gegenstand " << this->getInventory(index)->getName() << " wurde für "
@@ -120,11 +122,11 @@ void Hero::sellItem(int index)
     }
 }
 
-Item* Hero::getEquipment(int index)
+std::shared_ptr<Item> Hero::getEquipment(int index)
 {
     if(index >= 0 && index < MAX_EQUIPMENT_SIZE)
     {
-        Item* equipment = this->hero_gear[index];
+        std::shared_ptr<Item> equipment = this->hero_gear[index];
         return equipment;
     } else
     {
